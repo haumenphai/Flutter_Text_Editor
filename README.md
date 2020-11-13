@@ -1,6 +1,6 @@
-# text_edittor
+# text edittor
 
-A simple Flutter application: #Text EditTor
+A simple Flutter application: Text EditTor
 
 
 
