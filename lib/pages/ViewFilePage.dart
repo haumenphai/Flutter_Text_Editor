@@ -80,14 +80,17 @@ class _ViewFilePageState extends State<ViewFilePage> {
           )
         ],
       ),
-      body: Container(
-        width: 10000,
-        height: 1000,
-        padding: EdgeInsets.all(10),
-        child: TextField(
-          controller: textEditingControler,
-          maxLines: null,
-          enabled: enableEditText,
+      body: SingleChildScrollView(
+
+        child: Container(
+          width: 10000,
+          height: 1000,
+          padding: EdgeInsets.all(10),
+          child: TextField(
+            controller: textEditingControler,
+            maxLines: null,
+            enabled: enableEditText,
+          ),
         ),
       ),
     );
