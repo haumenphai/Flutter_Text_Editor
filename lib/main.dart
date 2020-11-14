@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:text_edittor/pages/HomePage.dart';
+import 'package:text_edittor/pages/ListSavePage.dart';
 import 'package:text_edittor/pages/ViewFilePage.dart';
 
 void main() {
@@ -13,9 +14,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         HomePage.pageName: (context) => HomePage(),
+        ListSavePage.pageName: (context) => ListSavePage(),
         ViewFilePage.pageName: (context) => ViewFilePage(),
       },
       home: HomePage(),
     );
   }
+
 }

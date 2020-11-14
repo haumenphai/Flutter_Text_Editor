@@ -1,12 +1,16 @@
 
 import 'dart:io';
 
+import 'package:text_edittor/helper/TimeHelper.dart';
+
 class FileText {
   String fileName;
   String content;
-  String date;
+  String date ;
 
-  FileText({this.fileName, this.content, this.date});
+  FileText({this.fileName, this.content, this.date}) {
+    date = getCurrentTime();
+  }
   Map toJson() => {
     'fileName': fileName,
     'content': content,

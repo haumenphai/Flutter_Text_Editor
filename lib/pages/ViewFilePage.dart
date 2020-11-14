@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:text_edittor/data/DataListFileText.dart';
 import 'package:text_edittor/helper/SnackBar.dart';
 import 'package:text_edittor/models/FileText.dart';
-import 'package:text_edittor/pages/HomePage.dart';
+import 'package:text_edittor/pages/ListSavePage.dart';
 import 'package:text_edittor/views/MyDiaLog.dart';
 
 class ViewFilePage extends StatefulWidget {

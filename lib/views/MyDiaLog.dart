@@ -44,7 +44,9 @@ void showMyAlertDialog(
 void showDialogAddNewFile(
     {BuildContext context, TextEditingController editFileName,
       Function onClickCancel,
-      Function onClickOK}
+      Function onClickOK,
+      String title = 'Enter file name'
+    }
     ) {
   showDialog(
       context: context,
@@ -61,7 +63,7 @@ void showDialogAddNewFile(
                 SizedBox(height: 5,),
                 Center(
                   child: Text(
-                    'Enter file name',
+                    title,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -89,7 +91,9 @@ void showDialogAddNewFile(
                       ),
                       onPressed: () {
                         Navigator.of(context).pop();
-                        onClickCancel.call();
+                        if(onClickCancel != null) {
+                          onClickCancel.call();
+                        }
                       },
                     ),
                     FlatButton(

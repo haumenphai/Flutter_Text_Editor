@@ -1,123 +1,157 @@
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:text_edittor/data/DataListFileText.dart';
+import 'package:text_edittor/data/DateTemp.dart';
 import 'package:text_edittor/helper/SnackBar.dart';
+import 'package:text_edittor/helper/TimeHelper.dart';
 import 'package:text_edittor/models/FileText.dart';
-import 'package:text_edittor/pages/ViewFilePage.dart';
+import 'package:text_edittor/pages/ListSavePage.dart';
 import 'package:text_edittor/views/MyDiaLog.dart';
-import 'package:text_edittor/views/ListViewFileText.dart';
 
 class HomePage extends StatefulWidget {
   static const String pageName = "HomePage";
+
   @override
-  _HomePageState createState() {
-    return _HomePageState();
-  }
-
-
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final editFileName = TextEditingController();
-  GlobalKey<ScaffoldState> key = GlobalKey();
-  List<FileText> list = [
-    // FileText(fileName: 'file text', content: 'pro', date: '2/2/2020'),
-  ];
-
-  void getData() {
-    getListFileText().then((value) {
-      setState(() {
-        list = value;
-      });
-    });
-  }
+  bool isEditing = false;
+  TextEditingController textEditingController = TextEditingController();
+  final GlobalKey<ScaffoldState> key = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    print('intit state');
-    getData();
+    WidgetsBinding.instance.addObserver(this);
+    setState(() {
+      getTextTemp().then((text) => textEditingController.text = text);
+    });
   }
 
-  // notworking
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // if (state == AppLifecycleState.resumed) {
-    //   showSnackBar(key, 'resum', 1111);
-      print('lsalsals');
-    // }
+    if (state == AppLifecycleState.resumed) {
+      print('resumed');
+    }
+
+    if (state == AppLifecycleState.paused) {
+      print('paused');
+      setTextTemp(textEditingController.text);
+    }
+
   }
 
   @override
   Widget build(BuildContext context) {
-    print('lol11111111');
+    final editAddFileNameControler = TextEditingController();
+
     return Scaffold(
-        key: key,
-        appBar: AppBar(
-          backgroundColor: Colors.brown,
-          title: Text("Text Edittor"),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () {
-                showDialogAddNewFile(
-                    context: context,
-                    editFileName: editFileName,
-                    onClickCancel: () {},
-                    onClickOK: () {
-                      if (editFileName.text.isEmpty) {
-                        showSnackBar(
-                            key, "Tên file không được để trống", 1000);
-                      } else {
-                        FileText fileText = FileText();
-                        fileText.fileName = editFileName.text;
-                        fileText.content = '';
-                        fileText.date = DateFormat('dd/MM/yyyy | hh:mm')
-                            .format(DateTime.now());
-
-                        list.add(fileText);
-
-                        Navigator.of(context).pop();
-                        saveList(list, onComplete: () {
-                          showSnackBar(key, "Thêm file thành công", 1000);
-                          setState(() {
-                            getData();
-                          });
-                        });
-                      }
-                    });
-              },
+      key: key,
+      appBar: AppBar(
+        title: Text("Text Edittor"),
+        backgroundColor: Colors.brown,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.edit,
+              color: isEditing? Colors.white: Colors.grey,
             ),
+            onPressed: () {
+              // print(getCurrentTime());
+              setState(() {
+                isEditing = !isEditing;
+              });
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.save),
+            onPressed: () {
+              showDialogAddNewFile(
+                title: "Save file",
+                context: context,
+                editFileName: editAddFileNameControler,
+                onClickOK: () {
+                  if(editAddFileNameControler.text.isEmpty) {
+                    showSnackBar(key, "Tên file không được để trống", 1000);
+                  } else {
+                    FileText fileText = FileText();
+                    fileText.fileName = editAddFileNameControler.text;
+                    fileText.content = textEditingController.text;
+                    addNewFileText(fileText, onComple: () {
+                      showSnackBar(key, "Lưu thành thành công", 1000);
+                      Navigator.pop(context);
+                    });
+                  }
+                }
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              showMyAlertDialog(
+                context: context,
+                title: "Delete temp text?",
+                mess: 'Xóa nội dung văn bản nháp?',
+                onClickOk: () {
+                  setState(() {
+                    textEditingController.text = '';
+                  });
+                }
+              );
+            },
+          )
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (i) {
+          if (i == 1) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, ListSavePage.pageName);
+            setTextTemp(textEditingController.text);
+          }
+        },
+        selectedItemColor: Colors.blueAccent,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home"
+          ),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.list_outlined),
+              label: "list saved"
+          )
+        ],
+      ),
+      body: Container(
+        color: Colors.brown[100],
+        child: ListView(
+          children: [
+            Container(
+              padding: EdgeInsets.all(10),
+              child: TextFormField(
+                enabled: isEditing? true:false,
+                controller: textEditingController,
+                decoration: InputDecoration(hintText: "write here"),
+                maxLines: null,
+
+              ),
+            )
           ],
         ),
-        body: ListViewFileText(
-          list: list,
-          onTapItem: (fileText, index) {
-            Navigator.pushNamed(context, ViewFilePage.pageName,
-                arguments: {
-                'fileText': fileText,
-                 'list': list
-            });
-          },
-          onLongPressItem: (fileText, index) {
-            showMyAlertDialog(
-                context: context,
-                title: "Xoá File",
-                mess: "Bạn có muốn xóa file: ${fileText.fileName} không?",
-                onClickCancel: () {},
-                onClickOk: () {
-                  list.remove(fileText);
-                  saveList(list, onComplete: () {
-                    setState(() {
-                      getData();
-                      showSnackBar(
-                          key, "Đã xóa file: ${fileText.fileName}", 1000);
-                    });
-                  });
-                });
-          },
-        ));
+      ),
+    );
   }
+
+
 
 
 }

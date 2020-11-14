@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:text_edittor/models/FileText.dart';
 
@@ -19,11 +20,35 @@ Future<List<FileText>> getListFileText()  async {
   return list;
 }
 
-void saveList(List<FileText> list, {Function onComplete}) async{
+void saveList(List<FileText> list, {Function onComplete}) async {
   var json = jsonEncode(list);
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   sharedPreferences.setString('listFileText', json);
   print('save list');
-  onComplete();
-
+  if(onComplete != null) {
+    onComplete();
+  }
 }
+
+void addNewFileText(FileText fileText, {@required onComple()}) async {
+  List<FileText> list = await getListFileText();
+  list.insert(0, fileText);
+  await saveList(list);
+  onComple();
+  print('add new file text: ${fileText.fileName}');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
